@@ -41,26 +41,54 @@ void runsaxpy()
 	}
 }
 
-void loop8digits( )
+int myPow(int num, int power)
 {
-	ULONGLONG d[8];
+	int pow = num;
+	for (int i = 0; i < power - 1; ++i)
+	{
+		pow = pow * num;
+	}
+
+	return pow;
+}
+
+template<typename InnerLoopCallback>
+void loop8digits(int power, InnerLoopCallback OnInnerLoop)
+{
+	int d[8];
+	ULONGLONG sum[8];
+
+	ULONGLONG powers[10];
+	for (int i = 0; i < 10; ++i)
+	{
+		powers[i] = myPow(i, power);
+	}
+
 	for (d[0] = 0; d[0] < 10; ++d[0])
 	{
+		sum[0] = powers[d[0]];
 		for (d[1] = 0; d[1] < 10; ++d[1])
 		{
+			sum[1] = sum[0] + powers[d[1]];
 			for (d[2] = 0; d[2] < 10; ++d[2])
 			{
+				sum[2] = sum[1] + powers[d[2]];
 				for (d[3] = 0; d[3] < 10; ++d[3])
 				{
+					sum[3] = sum[2] + powers[d[3]];
 					for (d[4] = 0; d[4] < 10; ++d[4])
 					{
+						sum[4] = sum[3] + powers[d[4]];
 						for (d[5] = 0; d[5] < 10; ++d[5])
 						{
+							sum[5] = sum[4] + powers[d[5]];
 							for (d[6] = 0; d[6] < 10; ++d[6])
 							{
+								sum[6] = sum[5] + powers[d[6]];
 								for (d[7] = 0; d[7] < 10; ++d[7])
 								{
-
+									sum[7] = sum[6] + powers[d[7]];
+									OnInnerLoop(sum[7]);
 								}
 							}
 						}
@@ -89,9 +117,10 @@ ULONGLONG euler30(void)
 	};
 
 	ULONGLONG sum = 0;
-	ULONGLONG num = 0;
+	ULONGLONG num10 = 0;
+	ULONGLONG foundCount = 0;
 
-	ULONGLONG _0to9[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	const ULONGLONG _0to9[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
 	for (int a = 0; a < 10; ++a)
 	{
@@ -109,52 +138,53 @@ ULONGLONG euler30(void)
 					{
 						ULONGLONG SumABCDE = SumABCD + POW5[e];
 
-						ULONGLONG numbers[10] = { num,num,num,num,num,num,num,num,num,num };
+						ULONGLONG numbers[10] = { num10,num10,num10,num10,num10,num10,num10,num10,num10,num10 };
 						
-						ULONGLONG resultSum[10];
-						//const vllong vBaseSum = load<vllong>(&baseSum[0]);
+						int j = 0;
+						ULONGLONG resultSum[16];
+						bool found = false;
 
 						for (int i = 0; i < 10; i += tsimd::vllong::static_size)
 						{
-							/*
 							const vllong vNum     = load<vllong>(&numbers[i]);
 							const vllong v0to9    = load<vllong>(&_0to9[i]);
 							const vllong vNumbers = vNum + v0to9;
-							*/
 
 							const vllong vPow5    = load<vllong>(&POW5[i]);
 							const vllong result   = (__int64)SumABCDE + vPow5;
-							store(result, &resultSum[i]);
-
-							/*
+							
 							auto vCmp = (result == vNumbers);
-							int j = 0;
-							for (auto iter = vCmp.begin(); iter != vCmp.end(); ++iter)
+							if (tsimd::any(vCmp))
 							{
-								if (iter->value)
-								{
-									sum += num + j;
-								}
-								++j;
-							}*/
-						}
-
-						
-						for (int i = 0; i < 10; ++i)
-						{
-							if (num == resultSum[i])
-							{
-								printf("jucksi: %llu\n", num);
-								sum += resultSum[i];
+								store(result, &resultSum[i]);
+								found = true;
+								++foundCount;
 							}
-
-							num++;
 						}
+
+						if (found)
+						{
+							ULONGLONG currNum = num10;
+							for (int i = 0; i < 10; ++i)
+							{
+								if (currNum == resultSum[i])
+								{
+									printf("%llu\n", currNum);
+									sum += resultSum[i];
+								}
+								++currNum;
+							}
+						}
+
+						num10 += 10;
 					}
 				}
 			}
 		}
 	}
+
+	printf("foundCount: %llu\n", foundCount);
+
 	sum -= 1;
 	return sum;
 }
