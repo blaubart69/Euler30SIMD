@@ -123,6 +123,26 @@ void loop6digits(InnerLoopCallback OnInnerLoop)
 	}
 }
 
+inline ULONGLONG v0(void)
+{
+	ULONGLONG sum = 0;
+	ULONGLONG num = 0;
+
+	loop8digits([&sum, &num](ULONGLONG outerSum)
+	{
+		for (int i = 0; i < 10; ++i)
+		{
+			if ( outerSum + g_powers[i] == num )
+			{
+				printf("%llu\n", num);
+				sum += num;
+			}
+			++num;
+		}
+	});
+
+	return sum-1;
+}
 
 inline ULONGLONG v2_powerX(void)
 {
@@ -279,7 +299,8 @@ int main()
 		}
 
 		//ULONGLONG result = euler30();
-		ULONGLONG result = v2_powerX();
+		//ULONGLONG result = v2_powerX();
+		ULONGLONG result = v0();
 		printf("sum: %llu\n", result);
 	}
 	catch (std::exception ex)
