@@ -41,7 +41,7 @@ void runsaxpy()
 	}
 }
 
-int myPow(int num, int power)
+constexpr int myPow(int num, int power)
 {
 	int pow = num;
 	for (int i = 0; i < power - 1; ++i)
@@ -52,42 +52,38 @@ int myPow(int num, int power)
 	return pow;
 }
 
+ULONGLONG g_powers[10];
+
 template<typename InnerLoopCallback>
-void loop8digits(int power, InnerLoopCallback OnInnerLoop)
+void loop8digits(InnerLoopCallback OnInnerLoop)
 {
 	int d[8];
 	ULONGLONG sum[8];
-
-	ULONGLONG powers[10];
-	for (int i = 0; i < 10; ++i)
-	{
-		powers[i] = myPow(i, power);
-	}
-
+	
 	for (d[0] = 0; d[0] < 10; ++d[0])
 	{
-		sum[0] = powers[d[0]];
+		sum[0] = g_powers[d[0]];
 		for (d[1] = 0; d[1] < 10; ++d[1])
 		{
-			sum[1] = sum[0] + powers[d[1]];
+			sum[1] = sum[0] + g_powers[d[1]];
 			for (d[2] = 0; d[2] < 10; ++d[2])
 			{
-				sum[2] = sum[1] + powers[d[2]];
+				sum[2] = sum[1] + g_powers[d[2]];
 				for (d[3] = 0; d[3] < 10; ++d[3])
 				{
-					sum[3] = sum[2] + powers[d[3]];
+					sum[3] = sum[2] + g_powers[d[3]];
 					for (d[4] = 0; d[4] < 10; ++d[4])
 					{
-						sum[4] = sum[3] + powers[d[4]];
+						sum[4] = sum[3] + g_powers[d[4]];
 						for (d[5] = 0; d[5] < 10; ++d[5])
 						{
-							sum[5] = sum[4] + powers[d[5]];
+							sum[5] = sum[4] + g_powers[d[5]];
 							for (d[6] = 0; d[6] < 10; ++d[6])
 							{
-								sum[6] = sum[5] + powers[d[6]];
+								sum[6] = sum[5] + g_powers[d[6]];
 								for (d[7] = 0; d[7] < 10; ++d[7])
 								{
-									sum[7] = sum[6] + powers[d[7]];
+									sum[7] = sum[6] + g_powers[d[7]];
 									OnInnerLoop(sum[7]);
 								}
 							}
@@ -97,6 +93,88 @@ void loop8digits(int power, InnerLoopCallback OnInnerLoop)
 			}
 		}
 	}
+}
+template<typename InnerLoopCallback>
+void loop6digits(InnerLoopCallback OnInnerLoop)
+{
+	int d[8];
+	ULONGLONG sum[8];
+
+	for (d[0] = 0; d[0] < 10; ++d[0])
+	{
+		sum[0] = g_powers[d[0]];
+		for (d[1] = 0; d[1] < 10; ++d[1])
+		{
+			sum[1] = sum[0] + g_powers[d[1]];
+			for (d[2] = 0; d[2] < 10; ++d[2])
+			{
+				sum[2] = sum[1] + g_powers[d[2]];
+				for (d[3] = 0; d[3] < 10; ++d[3])
+				{
+					sum[3] = sum[2] + g_powers[d[3]];
+					for (d[4] = 0; d[4] < 10; ++d[4])
+					{
+						sum[4] = sum[3] + g_powers[d[4]];
+						OnInnerLoop(sum[4]);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+inline ULONGLONG v2_powerX(void)
+{
+	ULONGLONG sum = 0;
+	ULONGLONG num10 = 0;
+	const ULONGLONG _0to9[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+	using namespace tsimd;
+
+	loop8digits([&sum, &_0to9, &num10](ULONGLONG outerSum)
+	{
+		ULONGLONG numbers[10] = { num10,num10,num10,num10,num10,num10,num10,num10,num10,num10 };
+
+		int j = 0;
+		ULONGLONG resultSum[16];
+		bool found = false;
+
+		for (int i = 0; i < 10; i += tsimd::vllong::static_size)
+		{
+			const vllong vNum = load<vllong>(&numbers[i]);
+			const vllong v0to9 = load<vllong>(&_0to9[i]);
+			const vllong vNumbers = vNum + v0to9;
+
+			const vllong vPow5 = load<vllong>(&g_powers[i]);
+			const vllong result = (__int64)outerSum + vPow5;
+
+			auto vCmp = (result == vNumbers);
+			if (tsimd::any(vCmp))
+			{
+				store(result, &resultSum[i]);
+				found = true;
+			}
+		}
+
+		if (found)
+		{
+			ULONGLONG currNum = num10;
+			for (int i = 0; i < 10; ++i)
+			{
+				if (currNum == resultSum[i])
+				{
+					printf("%llu\n", currNum);
+					sum += resultSum[i];
+				}
+				++currNum;
+			}
+		}
+
+		num10 += 10;
+	});
+
+	return sum-1;
 }
 
 ULONGLONG euler30(void)
@@ -193,7 +271,15 @@ int main()
 {
 	try
 	{
-		ULONGLONG result = euler30();
+		int power = 8;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			g_powers[i] = myPow(i, power);
+		}
+
+		//ULONGLONG result = euler30();
+		ULONGLONG result = v2_powerX();
 		printf("sum: %llu\n", result);
 	}
 	catch (std::exception ex)
