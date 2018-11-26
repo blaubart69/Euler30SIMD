@@ -26,20 +26,11 @@ int mike256(void) {
 	ten = _mm256_set1_epi32(10);
 	sum = _mm256_setzero_si256();
 
-	/*
-	seq3210 = _mm256_set_epi32(0, 1, 2, 3);
-	seq7654 = _mm256_set_epi32(4, 5, 6, 7);
-	seqXX98 = _mm256_set_epi32(8, 9, 0x80000000, 0x80000000);
-	pow3210 = _mm256_set_epi32(0, 1, POW(2), POW(3));
-	pow7654 = _mm256_set_epi32(POW(4), POW(5), POW(6), POW(7));
-	powXX98 = _mm256_set_epi32(POW(8), POW(9), 0, 0);
-	*/
 	seq76543210 = _mm256_set_epi32( 0, 1,     2,      3,      4,      5,      6,      7  );
 	pow76543210 = _mm256_set_epi32( 0, 1, POW(2), POW(3), POW(4), POW(5), POW(6), POW(7) );
 
 	seqXXXXXX98 = _mm256_set_epi32(     8,      9, 0x80000000, 0x80000000, 0x80000000, 0x80000000, 0x80000000, 0x80000000 );
 	powXXXXXX98 = _mm256_set_epi32( POW(8), POW(9),         0,          0,          0,          0,          0,          0 );
-
 
 	for (a = 0; a < 10; a++) {
 		for (b = 0; b < 10; b++) {
@@ -71,7 +62,16 @@ int mike256(void) {
 		powXXXXXX98 = _mm256_add_epi32(powXXXXXX98, p10[a]);
 	}
 
-	printf("256: %lu\n", sum.m256i_u32[0] + sum.m256i_u32[1] + sum.m256i_u32[2] + sum.m256i_u32[3] - 1);
+	printf("256: %lu\n", 
+		  sum.m256i_u32[0] 
+		+ sum.m256i_u32[1] 
+		+ sum.m256i_u32[2] 
+		+ sum.m256i_u32[3] 
+		+ sum.m256i_u32[4]
+		+ sum.m256i_u32[5]
+		+ sum.m256i_u32[6]
+		+ sum.m256i_u32[7]
+		- 1);
 
 	return 0;
 }

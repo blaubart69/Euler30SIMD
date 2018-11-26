@@ -5,6 +5,7 @@
 
 extern "C" int mike(void);
 extern "C" int mike256(void);
+extern "C" int mike256_10digits(void);
 
 #define LLONG __int64
 #define ULONGLONG unsigned __int64
@@ -56,6 +57,52 @@ constexpr int myPow(int num, int power)
 }
 
 ULONGLONG g_powers[10];
+
+
+template<typename InnerLoopCallback>
+void loop9digits(InnerLoopCallback OnInnerLoop)
+{
+	int d[9];
+	ULONGLONG sum[9];
+
+	for (d[0] = 0; d[0] < 10; ++d[0])
+	{
+		sum[0] = g_powers[d[0]];
+		for (d[1] = 0; d[1] < 10; ++d[1])
+		{
+			sum[1] = sum[0] + g_powers[d[1]];
+			for (d[2] = 0; d[2] < 10; ++d[2])
+			{
+				sum[2] = sum[1] + g_powers[d[2]];
+				for (d[3] = 0; d[3] < 10; ++d[3])
+				{
+					sum[3] = sum[2] + g_powers[d[3]];
+					for (d[4] = 0; d[4] < 10; ++d[4])
+					{
+						sum[4] = sum[3] + g_powers[d[4]];
+						for (d[5] = 0; d[5] < 10; ++d[5])
+						{
+							sum[5] = sum[4] + g_powers[d[5]];
+							for (d[6] = 0; d[6] < 10; ++d[6])
+							{
+								sum[6] = sum[5] + g_powers[d[6]];
+								for (d[7] = 0; d[7] < 10; ++d[7])
+								{
+									sum[7] = sum[6] + g_powers[d[7]];
+									for (d[8] = 0; d[8] < 10; ++d[8])
+									{
+										sum[8] = sum[7] + g_powers[d[8]];
+										OnInnerLoop(sum[8]);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 template<typename InnerLoopCallback>
 void loop8digits(InnerLoopCallback OnInnerLoop)
@@ -131,7 +178,7 @@ inline ULONGLONG v0(void)
 	ULONGLONG sum = 0;
 	ULONGLONG num = 0;
 
-	loop8digits([&sum, &num](ULONGLONG outerSum)
+	loop9digits([&sum, &num](ULONGLONG outerSum)
 	{
 		for (int i = 0; i < 10; ++i)
 		{
@@ -294,9 +341,8 @@ int main()
 {
 	try
 	{
-		/*
-		int power = 8;
-
+		
+		int power = 9;
 		for (int i = 0; i < 10; ++i)
 		{
 			g_powers[i] = myPow(i, power);
@@ -304,12 +350,12 @@ int main()
 
 		//ULONGLONG result = euler30();
 		//ULONGLONG result = v2_powerX();
-		ULONGLONG result = v0();
-		printf("sum: %llu\n", result);
-		*/
+		//ULONGLONG result = v0();		printf("plain C loop 10-digits sum: %llu\n", result);
+		
 
-		mike();
-		mike256();
+		//mike();
+		//mike256();
+		mike256_10digits();
 	}
 	catch (std::exception ex)
 	{

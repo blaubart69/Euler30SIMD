@@ -32,5 +32,8 @@
     <ClCompile Include="0030_256.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="0030_256_10digits.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
