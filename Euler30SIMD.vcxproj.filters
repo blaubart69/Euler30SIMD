@@ -26,5 +26,11 @@
     <ClCompile Include="Euler30SIMD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mike\0030.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="0030_256.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

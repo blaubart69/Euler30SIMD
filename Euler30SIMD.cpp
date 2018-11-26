@@ -3,6 +3,9 @@
 
 #include "pch.h"
 
+extern "C" int mike(void);
+extern "C" int mike256(void);
+
 #define LLONG __int64
 #define ULONGLONG unsigned __int64
 
@@ -291,6 +294,7 @@ int main()
 {
 	try
 	{
+		/*
 		int power = 8;
 
 		for (int i = 0; i < 10; ++i)
@@ -302,6 +306,10 @@ int main()
 		//ULONGLONG result = v2_powerX();
 		ULONGLONG result = v0();
 		printf("sum: %llu\n", result);
+		*/
+
+		mike();
+		mike256();
 	}
 	catch (std::exception ex)
 	{
