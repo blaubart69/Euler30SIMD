@@ -35,5 +35,8 @@
     <ClCompile Include="0030_256_10digits.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mike\0030_ampC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

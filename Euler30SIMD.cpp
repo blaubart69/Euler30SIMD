@@ -5,7 +5,9 @@
 
 extern "C" int mike(void);
 extern "C" int mike256(void);
-extern "C" int mike256_10digits(void);
+extern "C" int mike256_10digits(void); 
+unsigned long int mikeAMP(void);
+unsigned long int mikeAMP(int power);
 
 #define LLONG __int64
 #define ULONGLONG unsigned __int64
@@ -350,17 +352,20 @@ int main()
 
 		//ULONGLONG result = euler30();
 		//ULONGLONG result = v2_powerX();
-		//ULONGLONG result = v0();		printf("plain C loop 10-digits sum: %llu\n", result);
+		ULONGLONG result;
+		// result = v0();		printf("plain C loop 10-digits sum: %llu\n", result);
 		
 
 		//mike();
 		//mike256();
-		mike256_10digits();
+		//mike256_10digits();
+		result = mikeAMP(12);
+
+		printf("mikeAMP: %lu\n", result);
 	}
 	catch (std::exception ex)
 	{
 		printf("%s\n", ex.what());
 	}
-	printf("bye\n");
 }
 
